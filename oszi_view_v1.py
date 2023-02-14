@@ -2,7 +2,7 @@
 ###################################################################################
 # Messung 13.2.2023 - iron oxide 250 nm
 # 
-# 8x Mittelungen Lecroy x 8 Mittelungen manuel
+# 8x Mittelungen Lecroy x 8 Mittelungen manual
 # folder: # ./
 
 
@@ -14,27 +14,31 @@ main_title = "old RDS 50 kHz - Iron Oxide 250 nm"
 
 data_dir = "./rds13022023_iron_oxide_250b/"    
 
-file_type = 'TRC' # 'CSV' or 'TRC' 
+file_type = 'TRC' # Tektronix: 'CSV'; Lecroy: 'TRC' 
 
-# Directory for preprocessed data:
-temp_dir_name = "rds_50kHz_IronOxide_x8x8/"    
-import platform
-if platform.system() == 'Windows':
-    temp_dir_root = "C:/Users/marti/Downloads/"
-elif platform.system() == 'Linux':
-    temp_dir_root = "/home/martin/Downloads/"
-temp_dir = temp_dir_root + temp_dir_name   
-import os
-if not os.path.exists( temp_dir ):
-    os.mkdir( temp_dir )
-    
-FORCE_RAW_DATA_RELOAD = True # ignore preprocessed data in temp_dir
 
 DELETE_EXISTING_PLOTS = True  
+harmonic_plot_list = range(1,17)#[2,3,4,5,10,11,16,17,22,23]                                                            
 
 
-harmonic_plot_list = range(1,17)#[2,3,4,5,10,11,16,17,22,23]
+CREATE_NPY_TEMP_DATA  = False
+FORCE_RAW_DATA_RELOAD = True # ignore preprocessed data in temp_dir
+
+import platform
+import os
+if CREATE_NPY_TEMP_DATA: # -> *.npy loads faster than *.csv
+
+    # Directory for preprocessed data:
+    temp_dir_name = "rds_50kHz_IronOxide_x8x8/"    
     
+    if platform.system() == 'Windows':
+        temp_dir_root = "C:/Users/marti/Downloads/"
+    elif platform.system() == 'Linux':
+        temp_dir_root = "/home/martin/Downloads/"
+    temp_dir = temp_dir_root + temp_dir_name   
+   
+    if not os.path.exists( temp_dir ):
+        os.mkdir( temp_dir )
 
 # file collection: [1...N]
 # blocks in file collection: [1..M][M+1..K]..[..N]
@@ -261,7 +265,7 @@ except:
         else:
             sig = np.append( sig, sig_, axis=0 )
           
-    if os.path.exists( temp_dir ):        
+    if CREATE_NPY_TEMP_DATA and os.path.exists( temp_dir ):         
         np.save( temp_dir + 'sig.npy', sig)
         np.save( temp_dir + 'n_avg.npy', n)
         np.save( temp_dir + 't.npy', t)
